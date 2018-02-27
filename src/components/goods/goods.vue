@@ -3,7 +3,8 @@
     <div class="menu-wrapper" ref="menuWrapper">
       <ul>
         <!-- eslint-disable-next-line -->
-        <li v-for="item in goods" class="menu-item">
+        <li v-for="(item,index) in goods" class="menu-item"
+            :class="{'current':currentIndex===index}" @click="selectMenu(index,$event)">
           <span class="text">
             <span v-show="item.type>0" class="icon"
                   :class="classMap[item.type]"></span>
@@ -15,7 +16,7 @@
     <div class="foods-wrapper" ref="foodsWrapper">
       <ul>
         <!-- eslint-disable-next-line -->
-        <li v-for="item in goods" class="food-list">
+        <li v-for="item in goods" class="food-list food-list-hook">
           <h1 class="title">{{ item.name }}</h1>
           <ul>
             <!-- eslint-disable-next-line -->
@@ -54,7 +55,22 @@
     data () {
       return {
         goods: [],
-        selectFood: {}
+        listHeight: [],
+        scrollY: 0
+      }
+    },
+    computed: {
+      currentIndex () {
+        for (let i = 0; i < this.listHeight.length; i++) {
+          let height1 = this.listHeight[i]
+          let height2 = this.listHeight[i + 1]
+          if (!height2 ||
+            (this.scrollY >= height1 &&
+              this.scrollY < height2)) {
+            return i
+          }
+        }
+        return 0
       }
     },
     created () {
@@ -66,14 +82,39 @@
           this.goods = response.data
           this.$nextTick(() => {
             this._initScroll()
+            this._calculateHeight()
           })
         }
       })
     },
     methods: {
+      selectMenu (index, event) {
+        if (!event._constructed) {// 因为在pc模式下，点击事件会触发两次，所以加上了event，
+          // 以及这个if，如果是pc模式，这个手机模式下的点击事件就跳出了
+          return
+        }
+        console.log(index)
+      },
       _initScroll () {
-        this.menuScroll = new BScroll(this.$refs.menuWrapper, {})
-        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {})
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+          click: true
+        })
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          probeType: 3 // 告诉我们实时滚动的位置
+        })
+        this.foodsScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(Math.round(pos.y))
+        })
+      },
+      _calculateHeight () {
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i]
+          height += item.clientHeight
+          this.listHeight.push(height)
+        }
       }
     }
   }
@@ -103,12 +144,28 @@
     padding: 0 12px;
   }
 
+  .menu-wrapper .current {
+    position: relative;
+    margin-top: -1px;
+    z-index: 10;
+    background: #fff;
+    font-weight: 700;
+  }
+
+  .menu-wrapper .current .text {
+    border: none;
+  }
+
   .menu-wrapper .menu-item .text {
     display: table-cell;
     width: 56px;
     vertical-align: middle;
     font-size: 12px;
     border-bottom: 1px solid rgba(7, 17, 27, .2);
+  }
+
+  .menu-wrapper .menu-item:last-child .text {
+    border: none;
   }
 
   .menu-wrapper .menu-item .text .icon {
