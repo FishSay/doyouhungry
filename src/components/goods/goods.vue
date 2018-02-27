@@ -1,6 +1,6 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" ref="menuWrapper">
       <ul>
         <!-- eslint-disable-next-line -->
         <li v-for="item in goods" class="menu-item">
@@ -12,7 +12,7 @@
         </li>
       </ul>
     </div>
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" ref="foodsWrapper">
       <ul>
         <!-- eslint-disable-next-line -->
         <li v-for="item in goods" class="food-list">
@@ -27,12 +27,10 @@
                 <h2 class="name">{{ food.name }}</h2>
                 <p class="desc">{{ food.description }}</p>
                 <div class="extra">
-                  <span class="count">月售{{ food.sellCount }}份</span>
-                  <span>好评率{{ food.rating }}%</span>
+                  <span class="count">月售{{ food.sellCount }}份</span><span>好评率{{ food.rating }}%</span>
                 </div>
                 <div class="price">
-                  <span class="now">￥{{ food.price }}</span>
-                  <span class="old" v-show="food.oldPrice">￥{{ food.oldPrice }}</span>
+                  <span class="now">￥{{ food.price }}</span><span class="old" v-show="food.oldPrice">￥{{ food.oldPrice }}</span>
                 </div>
               </div>
             </li>
@@ -44,7 +42,8 @@
 </template>
 
 <script>
-  // import BScroll from 'better-scroll'
+  import BScroll from 'better-scroll'
+
   const ERR_OK = 0
   export default {
     prop: {
@@ -65,8 +64,17 @@
         response = response.body
         if (response.errno === ERR_OK) {
           this.goods = response.data
+          this.$nextTick(() => {
+            this._initScroll()
+          })
         }
       })
+    },
+    methods: {
+      _initScroll () {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {})
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {})
+      }
     }
   }
 </script>
@@ -200,7 +208,7 @@
 
   .food-list .food-item .content .desc {
     margin-bottom: 8px;
-    line-height: 10px;
+    line-height: 12px;
     font-size: 10px;
     color: rgb(7, 17, 27);
   }
@@ -225,9 +233,10 @@
     font-size: 14px;
     color: rgb(240, 20, 20);
   }
-  .food-item .content .price .old{
+
+  .food-item .content .price .old {
     text-decoration: line-through;
     font-size: 10px;
-    color: rgb(147,153,159);
+    color: rgb(147, 153, 159);
   }
 </style>
