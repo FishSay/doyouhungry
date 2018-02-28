@@ -33,21 +33,30 @@
                 <div class="price">
                   <span class="now">￥{{ food.price }}</span><span class="old" v-show="food.oldPrice">￥{{ food.oldPrice }}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <shopcart :delivery-price="seller.deliveryPrice"
+              :min-price="seller.minPrice"
+              :select-foods="selectFoods"
+              ref="shopcart"></shopcart>
   </div>
 </template>
 
 <script>
   import BScroll from 'better-scroll'
+  import shopcart from '../shopcart/shopcart'
+  import cartcontrol from '../cartcontrol/cartcontrol'
 
   const ERR_OK = 0
   export default {
-    prop: {
+    props: {
       seller: {
         type: Object
       }
@@ -71,6 +80,17 @@
           }
         }
         return 0
+      },
+      selectFoods () {
+        let foods = []
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
     created () {
@@ -89,17 +109,18 @@
     },
     methods: {
       selectMenu (index, event) {
-        if (!event._constructed) {// 因为在pc模式下，点击事件会触发两次，所以加上了event，
+        if (!event._constructed) { // 因为在pc模式下，点击事件会触发两次，所以加上了event，
           // 以及这个if，如果是pc模式，这个手机模式下的点击事件就跳出了
           return
         }
-        console.log(index)
+        this.foodsScroll.scrollTo(0, -this.listHeight[index], 300)
       },
       _initScroll () {
         this.menuScroll = new BScroll(this.$refs.menuWrapper, {
           click: true
         })
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          click: true,
           probeType: 3 // 告诉我们实时滚动的位置
         })
         this.foodsScroll.on('scroll', (pos) => {
@@ -115,6 +136,21 @@
           height += item.clientHeight
           this.listHeight.push(height)
         }
+      },
+      _drop (target) {
+        // 体验优化，
+        this.$nextTick(() => {
+          this.$refs.shopcart.drop(target)
+        })
+      }
+    },
+    components: {
+      shopcart,
+      cartcontrol
+    },
+    events: {
+      'cart.add' (target) {
+        this._drop(target)
       }
     }
   }
@@ -239,6 +275,7 @@
     margin: 18px;
     border-bottom: 1px solid rgba(7, 17, 27, .1);
     padding-bottom: 18px;
+    position: relative;
   }
 
   .foods-wrapper .food-list .food-item:last-child {
@@ -295,5 +332,11 @@
     text-decoration: line-through;
     font-size: 10px;
     color: rgb(147, 153, 159);
+  }
+
+  .food-item .content .cartcontrol-wrapper {
+    position: absolute;
+    right: 0;
+    bottom: 12px;
   }
 </style>

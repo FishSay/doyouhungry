@@ -12,3 +12,12 @@
             :class="{'current':currentIndex===$index}">`
 应该改为`<li v-for="(item,index) in goods" class="menu-item"
             :class="{'current':currentIndex===index}">`
+			
+# 点击左侧菜单，右侧跳到相应地方
+老师写法
+```
+    let foodList = this.foodsWrapper.getElementsByClassName('food-list-hook')
+    let el = foodList[index]
+    this.foodsScroll.scrollTo(0, -this.listHeight[index], 300)
+```
+应该改为`this.foodsScroll.scrollTo(0, -this.listHeight[index], 300)`
