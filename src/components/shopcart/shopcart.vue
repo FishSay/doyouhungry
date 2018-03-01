@@ -1,6 +1,6 @@
 <template>
   <div class="shopcart">
-    <div class="content">
+    <div class="content" @click="toggleList">
       <div class="content-left">
         <div class="logo-wrapper">
           <div class="logo" :class="{'hightLight-logo':totalCount>0}">
@@ -22,11 +22,33 @@
         </div>
       </transition-group>
     </div>
+    <transition>
+      <div class="shopcart-list" v-show="listShow">
+        <div class="list-header">
+          <h1 class="title">购物车</h1>
+          <span class="empty">清空</span>
+        </div>
+        <div class="list-content">
+          <ul>
+            <!--eslint-disable-next-line-->
+            <li class="food" v-for="food in selectFoods">
+              <span class="name">{{food.name}}</span>
+              <div class="price">
+                <span>￥{{food.price*food.count}}</span>
+              </div>
+              <div class="cartcontrol-wrapper">
+                <cartcontrol :food="food"></cartcontrol>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
-  //  import cartcontrol from '../cartcontrol/cartcontrol'
+  import cartcontrol from '../cartcontrol/cartcontrol'
 
   export default {
     props: {
@@ -49,7 +71,8 @@
       return {
         balls: [{show: false}, {show: false}, {show: false}, {show: false}, {show: false}
         ],
-        dropBalls: []
+        dropBalls: [],
+        fold: true // fold是折叠的意思
       }
     },
     computed: {
@@ -83,6 +106,14 @@
         } else {
           return 'pay-enough'
         }
+      },
+      listShow () {
+        if (!this.totalCount) {
+          this.fold = true
+          return false
+        }
+        let show = !this.fold
+        return show
       }
     },
     methods: {
@@ -131,7 +162,16 @@
           ball.show = false
           el.style.display = 'none'
         }
+      },
+      toggleList () {
+        if (!this.totalCount) {
+          return
+        }
+        this.fold = !this.fold
       }
+    },
+    components: {
+      cartcontrol
     }
   }
 </script>
@@ -263,7 +303,7 @@
   }
 
   .shopcart .ball-container .drop-transition {
-    transition: all 0.4s cubic-bezier(.49,-.29,.75,.41);
+    transition: all 0.4s cubic-bezier(.49, -.29, .75, .41);
   }
 
   .shopcart .ball-container .drop-transition .inner {
@@ -272,5 +312,12 @@
     border-radius: 50%;
     background: rgb(0, 160, 220);
     transition: all 0.4s linear;
+  }
+  .shopcart .shopcart-list{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
   }
 </style>
