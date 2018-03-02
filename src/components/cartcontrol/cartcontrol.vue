@@ -31,7 +31,7 @@
         } else {
           this.food.count++
         }
-//        this.$emit('cart.add', event.target)
+        this.$emit('cart.add', event.target)
       },
       decreaseCart () {
         if (!event._constructed) {
@@ -71,13 +71,13 @@
   }
 
   .cartcontrol .move-enter,
-  .cartcontrol .move-leave {
+  .cartcontrol .move-leave-active {
     opacity: 0;
     transform: translate3d(24px, 0, 0);
   }
 
   .cartcontrol .move-enter .inner,
-  .cartcontrol .move-leave .inner {
+  .cartcontrol .move-leave-active .inner {
     transform: rotate(180deg);
   }
 

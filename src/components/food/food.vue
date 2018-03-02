@@ -1,25 +1,158 @@
 <template>
-  <div v-show="showFlag" class="food"></div>
+  <transition name="move">
+    <div v-show="showFlag" class="food" ref="food">
+      <div class="food-content">
+        <div class="image-header">
+          <img :src="food.image" alt="">
+          <div class="back" @click="hide">
+            <i class="icon-arrow_lift"></i>
+          </div>
+        </div>
+        <div class="content">
+          <h1 class="title">{{food.name}}</h1>
+          <div class="detailL">
+            <span class="sell-count">月售{{food.sellCount}}</span>
+            <span class="rating">好评率{{food.rating}}</span>
+          </div>
+          <div class="price">
+            <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">{{food.oldPrice}}</span>
+          </div>
+        </div>
+        <div class="cartcontrol-wrapper">
+          <cartcontrol :food="food"></cartcontrol>
+        </div>
+        <div class="buy"></div>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script>
+  import BScroll from 'better-scroll'
+  import cartcontrol from '../cartcontrol/cartcontrol'
+
   export default {
     props: {
       food: {
         type: Object
       }
+    },
+    data () {
+      return {
+        showFlag: false
+      }
+    },
+    methods: {
+      show () {
+        this.showFlag = true
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs.food, {
+              click: true
+            })
+          } else {
+            this.scroll.refresh()
+          }
+        })
+      },
+      hide () {
+        this.showFlag = false
+      }
+    },
+    components: {
+      cartcontrol
     }
   }
 </script>
 
 <style>
-.food{
-  width: 100%;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 48px;
-  z-index: 30;
-  background: #ffffff;
-}
+  .food {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 48px;
+    z-index: 30;
+    background: #ffffff;
+    transform: translate3d(0, 0, 0);
+    transition: all 0.2s linear;
+  }
+
+  .move-enter, .move-leave-active {
+    transform: translate3d(100%, 0, 0);
+  }
+
+  .food .food-content .image-header {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-top: 100%;
+  }
+
+  .food .food-content .image-header img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .food .food-content .image-header .back {
+    position: absolute;
+    top: 10px;
+    left: 0;
+  }
+
+  .food-content .image-header .back .icon-arrow_lift {
+    display: block;
+    padding: 10px;
+    font-size: 20px;
+    color: #fff;
+  }
+
+  .food .food-content .content {
+    padding: 18px;
+  }
+
+  .food .food-content .content .title {
+    line-height: 14px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgb(7, 17, 27);
+  }
+
+  .food .food-content .content .detailL {
+    height: 10px;
+    margin-bottom: 18px;
+    line-height: 10px;
+    font-size: 0;
+  }
+
+  .food-content .content .detailL .sell-count,
+  .food-content .content .detailL .rating {
+    font-size: 10px;
+    color: rgb(147, 153, 159);
+  }
+
+  .food-content .content .detailL .sell-count {
+    margin-right: 12px;
+  }
+
+  .food .food-content .content .price {
+    font-weight: 700;
+    font-size: 24px;
+  }
+
+  .food-content .content .price .now {
+    margin-right: 8px;
+    font-size: 14px;
+    color: rgb(240, 20, 20);
+  }
+
+  .food-content .content .price .old {
+    text-decoration: line-through;
+    font-size: 10px;
+    color: rgb(147, 153, 159);
+  }
 </style>
