@@ -2,7 +2,7 @@
   <div class="cartcontrol">
     <transition name="move">
       <div class="cart-decrease"
-           v-show="food.count>0" @click="decreaseCart">
+           v-show="food.count>0" @click.stop.prevent="decreaseCart">
         <span class="inner icon-remove_circle_outline"></span>
       </div>
     </transition>
@@ -31,7 +31,7 @@
         } else {
           this.food.count++
         }
-        this.$emit('cart.add', event.target)
+        this.$emit('cart-add', event.target)
       },
       decreaseCart () {
         if (!event._constructed) {

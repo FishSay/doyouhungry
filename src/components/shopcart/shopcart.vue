@@ -157,8 +157,8 @@
             el.style.webkitTransform = `translate3d(0,${y}px,0)`
             el.style.transform = `translate3d(0,${y}px,0)`
             let inner = el.getElementsByClassName('inner-hook')[0]
-            inner.style.webkitTransform = `translate3d(0,${x}px,0)`
-            inner.style.transform = `translate3d(0,${y}px,0)`
+            inner.style.webkitTransform = `translate3d(${x}px,0,0)`
+            inner.style.transform = `translate3d(${x}px,0,0)`
           }
         }
       },
@@ -331,13 +331,16 @@
     left: 32px;
     bottom: 22px;
     z-index: 200;
+    /*transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41);*/
   }
 
-  .shopcart .ball-container .drop-transition {
+  .shopcart .ball-container .drop-enter,
+  .shopcart .ball-container .drop-enter-active {
     transition: all 0.4s cubic-bezier(.49, -.29, .75, .41);
   }
 
-  .shopcart .ball-container .drop-transition .inner {
+  .shopcart .ball-container .drop-enter .inner,
+  .shopcart .ball-container .drop-enter-active .inner {
     width: 16px;
     height: 16px;
     border-radius: 50%;
