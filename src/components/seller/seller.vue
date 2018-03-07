@@ -75,8 +75,8 @@
   import BScroll from 'better-scroll'
   import star from '../star/star'
   import split from '../split/split'
-  import { saveToLocal, loadFromLocal} from '../../common/js/store'
-  
+  import { saveToLocal, loadFromLocal } from '../../common/js/store'
+
   export default {
     props: {
       seller: {

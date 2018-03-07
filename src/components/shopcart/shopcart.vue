@@ -55,7 +55,10 @@
 <script>
   import cartcontrol from '../cartcontrol/cartcontrol'
   import BScroll from 'better-scroll'
-
+  //  eslint-disable-next-line
+  let fold = this.fold
+  //  eslint-disable-next-line
+  let scroll = this.scroll
   export default {
     props: {
       selectFoods: {
@@ -115,14 +118,14 @@
       },
       listShow () {
         if (!this.totalCount) {
-          this.fold = true
+          fold = true
           return false
         }
         let show = !this.fold
         if (show) {
           this.$nextTick(() => {
             if (!this.scroll) {
-              this.scroll = new BScroll(this.$refs.listContent, {
+              scroll = new BScroll(this.$refs.listContent, {
                 click: true
               })
             } else {
