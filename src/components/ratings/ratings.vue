@@ -26,11 +26,14 @@
       </div>
       <split></split>
       <ratingselect :selectType="selectType" :onlyContent="onlyContent"
-                    :desc="desc" :ratings="ratings"></ratingselect>
+                    :desc="desc" :ratings="ratings"
+                    @ratingtypeSelect="ratingtypeSelect"
+                    @contentToggle="contentToggle"></ratingselect>
       <div class="rating-wrapper">
         <ul>
           <!--eslint-disable-next-line-->
-          <li v-for="rating in ratings" class="rating-item">
+          <li v-show="needShow(rating.rateType, rating.text)"
+              v-for="rating in ratings" class="rating-item">
             <div class="avatar">
               <img :src="rating.avatar" alt="" width="28" height="28">
             </div>
@@ -93,6 +96,30 @@
           })
         }
       })
+    },
+    methods: {
+      needShow (type, text) {
+        if (this.onlyContent && !text) {
+          return false
+        }
+        if (this.selectType === ALL) {
+          return true
+        } else {
+          return type === this.selectType
+        }
+      },
+      ratingtypeSelect (type) {
+        this.selectType = type
+        this.$nextTick(() => {
+          this.scroll.refresh()
+        })
+      },
+      contentToggle (onlyContent) {
+        this.onlyContent = onlyContent
+        this.$nextTick(() => {
+          this.scroll.refresh()
+        })
+      }
     },
     filters: {
       formatDate (time) {

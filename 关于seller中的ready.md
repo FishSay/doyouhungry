@@ -1,0 +1,1 @@
+# 2.0中将ready换成了mounted

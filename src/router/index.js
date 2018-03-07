@@ -28,5 +28,6 @@ export default new Router({
   ],
   linkActiveClass: 'active'
 })
+// eslint-disable-next-line
 const router = new Router()
-router.push('/goods')
+// router.push('/goods')
